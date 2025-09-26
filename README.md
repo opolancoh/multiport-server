@@ -196,6 +196,101 @@ The server ensures proper cleanup on exit:
 - **Error reporting**: Any cleanup issues are reported with specific details
 - **Signal handling**: Handles SIGINT, SIGTERM, and SIGABRT properly
 
+## Background Operation & Monitoring
+
+For running the server in background (especially useful when accessing via SSH):
+
+### Start in Background
+
+```bash
+# Start server in background with nohup
+nohup ./multiport-server-arm64 8080 8081 9000 &
+```
+
+This command:
+- `nohup` - Keeps the process running even if you disconnect from SSH
+- `&` - Runs the process in background, giving you back the console
+- Output is automatically redirected to `nohup.out` file
+
+### Monitor Server Output
+
+```bash
+# View all output from the server
+cat nohup.out
+
+# View output in real-time (follow mode)
+tail -f nohup.out
+```
+
+### Check Running Process
+
+```bash
+# Find your server process
+ps aux | grep multiport-server
+```
+
+Example output:
+```
+pheidias    2555  0.0  0.1 1230088 6656 pts/0    Sl   21:40   0:00 ./multiport-server-arm64 8080 8081 9000
+```
+
+This shows:
+- Process ID: `2555`
+- Memory usage: `6656 KB`
+- Status: `Sl` (Sleeping, multi-threaded - waiting for connections)
+- Start time: `21:40`
+
+### Check Listening Ports
+
+```bash
+# View all listening TCP ports
+netstat -tln
+
+# Filter for your specific ports
+netstat -tln | grep -E '8080|8081|9000'
+```
+
+Example output:
+```
+tcp6       0      0 :::8080                :::*                    LISTEN
+tcp6       0      0 :::8081                :::*                    LISTEN
+tcp6       0      0 :::9000                :::*                    LISTEN
+```
+
+### Stop Server Gracefully
+
+```bash
+# Send interrupt signal (same as Ctrl+C)
+kill -INT 2555
+
+# Or use SIGTERM for standard termination
+kill -TERM 2555
+
+# Or simply (defaults to SIGTERM)
+kill 2555
+```
+
+Replace `2555` with your actual process ID from `ps aux | grep multiport-server`.
+
+The server will:
+1. Print "Shutting down servers..."
+2. Stop accepting new connections
+3. Finish processing existing requests
+4. Clean up all resources
+5. Release all ports
+
+### Verify Shutdown
+
+```bash
+# Check if process is still running
+ps aux | grep multiport-server
+
+# Verify ports are released
+netstat -tln | grep -E '8080|8081|9000'
+```
+
+Both commands should return no results if the server stopped properly.
+
 ## Requirements
 
 - Go 1.21 or higher

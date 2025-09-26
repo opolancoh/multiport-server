@@ -73,7 +73,7 @@ func main() {
 		}(server, port)
 
 		// Give server a moment to start
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		if isServerRunning(port) {
 			successfulPorts = append(successfulPorts, port)
 		} else {
@@ -95,7 +95,7 @@ func main() {
 	}
 
 	// Wait for all server goroutines to be ready
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 
 	// Print summary
 	printSummary(failedPorts, successfulPorts, localIP, externalIP)
@@ -252,7 +252,7 @@ func isPortInUse(port int) bool {
 }
 
 func isServerRunning(port int) bool {
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), 100*time.Millisecond)
+	conn, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), 500*time.Millisecond)
 	if err != nil {
 		return false
 	}
