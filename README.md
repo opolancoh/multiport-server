@@ -29,7 +29,44 @@ Or run directly:
 go run main.go <port1> <port2> ... <portN>
 ```
 
-### Option 2: Cross-compile for Raspberry Pi / ARM devices
+### Option 2: Cross-compile for different platforms
+
+Build for various operating systems and architectures:
+
+```bash
+# Linux ARM64 (Raspberry Pi 4, etc.)
+GOOS=linux GOARCH=arm64 go build -o multiport-server-linux-arm64
+
+# Linux x86_64
+GOOS=linux GOARCH=amd64 go build -o multiport-server-linux-amd64
+
+# macOS ARM64 (Apple Silicon M1/M2/M3)
+GOOS=darwin GOARCH=arm64 go build -o multiport-server-darwin-arm64
+
+# macOS Intel (older Macs)
+GOOS=darwin GOARCH=amd64 go build -o multiport-server-darwin-amd64
+
+# Windows 64-bit
+GOOS=windows GOARCH=amd64 go build -o multiport-server-windows-amd64.exe
+
+# Windows 32-bit
+GOOS=windows GOARCH=386 go build -o multiport-server-windows-386.exe
+```
+
+#### macOS Usage
+```bash
+# Make executable and run
+chmod +x multiport-server-darwin-arm64
+./multiport-server-darwin-arm64 8080 8081 9000
+```
+
+#### Windows Usage
+```cmd
+# Run on Windows (Command Prompt or PowerShell)
+multiport-server-windows-amd64.exe 8080 8081 9000
+```
+
+### Option 3: Cross-compile for Raspberry Pi / ARM devices
 
 Build from your development machine and deploy to ARM devices:
 
@@ -43,40 +80,6 @@ scp multiport-server-arm64 pi@your-rpi-ip:/home/pi/
 # On your Raspberry Pi/ARM device
 chmod +x multiport-server-arm64
 ./multiport-server-arm64 8080 8081 9000
-```
-
-### Option 3: Install Go on Raspberry Pi
-
-If you want to build directly on your Raspberry Pi:
-
-```bash
-# Download and install Go
-wget https://go.dev/dl/go1.24.3.linux-arm64.tar.gz
-sudo tar -C /usr/local -xzf go1.24.3.linux-arm64.tar.gz
-
-# Add to your PATH
-echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-source ~/.bashrc
-
-# Verify installation
-go version
-
-# Then build normally
-git clone https://github.com/opolancoh/multiport-server.git
-cd multiport-server
-go build
-```
-
-## Usage
-
-Start servers on specific ports:
-```bash
-./multiport-server 8080 8081 9000
-```
-
-Or with `go run`:
-```bash
-go run main.go 3000 3001 8080 8081
 ```
 
 ## Example Output
@@ -110,52 +113,6 @@ SUMMARY
   • SUCCESS: 6
 
 Press Ctrl+C to stop...
-```
-
-### Graceful Shutdown Output
-
-When terminating the server:
-```
-Shutting down servers...
-🧹 Cleaning up resources...
-✅ All servers stopped successfully
-```
-
-Or if there are issues during cleanup:
-```
-🧹 Cleaning up resources...
-⚠️  Issues encountered during cleanup:
-  • Server on port :8080: shutdown timeout (forced close)
-⚠️  Note: Some resources may not have been properly released.
-```
-
-## HTTP Response
-
-Each server returns an HTML page showing:
-- Server status with running port information
-- HTTP response status (200 OK)
-- Port number that handled the request
-- Current datetime in ISO format with timezone
-- Request path
-- Response time for performance monitoring
-
-Example response:
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Test Server - Port 8080</title>
-</head>
-<body>
-    <h1>HTTP Server Response</h1>
-    <p><strong>Status:</strong> Server is currently running at port 8080</p>
-    <p><strong>Status:</strong> 200 OK</p>
-    <p><strong>Port:</strong> 8080</p>
-    <p><strong>DateTime:</strong> 2025-09-24 20:15:30 UTC</p>
-    <p><strong>Request Path:</strong> /</p>
-    <p><strong>Response Time:</strong> 0.2345 ms</p>
-</body>
-</html>
 ```
 
 ## Use Cases
